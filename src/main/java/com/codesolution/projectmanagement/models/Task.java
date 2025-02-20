@@ -19,9 +19,9 @@ public class Task {
     private Date dueDate;
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
-    private Project project_id;
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "project_id", referencedColumnName = "id", nullable = false)
+    private Project project;
     //getters and setters
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
@@ -73,5 +73,21 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

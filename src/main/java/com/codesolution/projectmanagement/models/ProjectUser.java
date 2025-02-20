@@ -11,11 +11,11 @@ public class ProjectUser {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user", referencedColumnName = "id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
+    @JoinColumn(name = "project", referencedColumnName = "id")
     private Project project;
 
     private String role;
