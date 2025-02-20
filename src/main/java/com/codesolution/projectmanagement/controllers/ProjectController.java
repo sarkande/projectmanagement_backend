@@ -2,6 +2,7 @@ package com.codesolution.projectmanagement.controllers;
 
 import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.services.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @RestController
 public class ProjectController {
-
+    @Autowired
     private ProjectService projectService;
 
     @GetMapping("/projects")
