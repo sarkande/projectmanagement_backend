@@ -3,19 +3,19 @@ package com.codesolution.projectmanagement.services.impl;
 import com.codesolution.projectmanagement.dao.ProjectRepository;
 import com.codesolution.projectmanagement.dao.ProjectUserRepository;
 import com.codesolution.projectmanagement.dao.UserRepository;
+import com.codesolution.projectmanagement.dtos.UserWithRoleDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
-import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.ProjectUser;
-import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.ProjectUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ProjectUserServiceImpl implements ProjectUserService {
+public class ProjectUserServiceImpl implements ProjectUserService  {
 
     @Autowired
     private ProjectUserRepository projectUserRepository;
@@ -28,7 +28,7 @@ public class ProjectUserServiceImpl implements ProjectUserService {
 
     @Override
     public List<ProjectUser> findAll() {
-        List<ProjectUser> projectUsers = new ArrayList<ProjectUser>();
+        List<ProjectUser> projectUsers = new ArrayList<>();
         projectUserRepository.findAll().forEach(projectUsers::add);
         return projectUsers;
     }
@@ -37,6 +37,13 @@ public class ProjectUserServiceImpl implements ProjectUserService {
     public ProjectUser findById(Integer id) {
         return projectUserRepository.findById(id)
                 .orElseThrow(() -> new EntityDontExistException("Relation projet-utilisateur non trouvée"));
+    }
+
+    @Override
+    public List<UserWithRoleDTO> findUsersWithRolesByProjectId(Integer projectId) {
+        return projectUserRepository.findByProject_Id(projectId).stream()
+                .map(pu -> new UserWithRoleDTO(pu.getUser(), pu.getRole()))
+                .collect(Collectors.toList());
     }
 
     @Override

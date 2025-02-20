@@ -1,5 +1,6 @@
 package com.codesolution.projectmanagement.services;
 
+import com.codesolution.projectmanagement.dtos.UserWithRoleDTO;
 import com.codesolution.projectmanagement.models.ProjectUser;
 import java.util.List;
 
@@ -10,4 +11,6 @@ public interface ProjectUserService {
     void update(Integer id, ProjectUser projectUser);
     void updatePartial(Integer id, ProjectUser oldProjectUser, ProjectUser newProjectUser);
     void delete(Integer id);
+
+    List<UserWithRoleDTO> findUsersWithRolesByProjectId(Integer id);
 }
