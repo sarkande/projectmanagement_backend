@@ -36,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
         projectService.findById(projectId);
 
 
-        Optional<Task> task = taskRepository.findByIdAndProjectId( projectId,taskId);
+        Optional<Task> task = taskRepository.findByProjectIdAndId( projectId,taskId);
         if (!task.isPresent())
             throw new EntityDontExistException();
 

@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface TaskRepository extends CrudRepository<Task, Integer> {
     List<Task> findByProjectId(Integer projectId);
-    Optional<Task> findByIdAndProjectId(Integer taskId, Integer projectId);
+    Optional<Task> findByProjectIdAndId(Integer projectId, Integer taskId);
 
 }
