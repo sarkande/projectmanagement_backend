@@ -23,8 +23,8 @@ public class TaskController {
     private ProjectRepository projectRepository;
 
     @ModelAttribute("project")
-    public Project validateProject(@ModelAttribute("project") Project project) {
-        return projectRepository.findById(project.getId())
+    public Project validateProject(@PathVariable Integer projectId) {
+        return projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityDontExistException("Projet non trouvé"));
     }
 
@@ -36,28 +36,28 @@ public class TaskController {
     }
 
     // Ajouter une tâche à un projet
-    @PostMapping("/tasks")
+    @PostMapping("/task")
     @ResponseStatus(HttpStatus.CREATED)
     public Integer addTaskToProject(@ModelAttribute("project") Project project, @RequestBody Task task) {
         return taskService.create(project.getId(), task);
     }
 
     // Obtenir une tâche spécifique d'un projet
-    @GetMapping("/tasks/{taskId}")
+    @GetMapping("/task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     public Task getTaskById(@ModelAttribute("project") Project project,@PathVariable Integer taskId) {
         return taskService.findById(project.getId(), taskId);
     }
 
     // Mettre à jour une tâche spécifique d'un projet
-    @PutMapping("/tasks/{taskId}")
+    @PutMapping("/task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     public void updateTask(@ModelAttribute("project") Project project,@PathVariable Integer taskId, @RequestBody Task task) {
         taskService.update(project.getId(), taskId, task);
     }
 
     // Mise à jour partielle d'une tâche d'un projet
-    @PatchMapping("/tasks/{taskId}")
+    @PatchMapping("/task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     public void updatePartialTask(@ModelAttribute("project") Project project,@PathVariable Integer taskId, @RequestBody Task newTask) {
         Task oldTask = taskService.findById(project.getId(), taskId);
@@ -65,7 +65,7 @@ public class TaskController {
     }
 
     // Supprimer une tâche d'un projet
-    @DeleteMapping("/tasks/{taskId}")
+    @DeleteMapping("/task/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@ModelAttribute("project") Project project,@PathVariable Integer taskId) {
         taskService.delete(project.getId(), taskId);

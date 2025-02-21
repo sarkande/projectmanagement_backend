@@ -1,6 +1,8 @@
 package com.codesolution.projectmanagement.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 @Table(name = "project")
@@ -9,9 +11,14 @@ public class Project {
 
     //attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @NotBlank(message = "Le nom du projet est obligatoire")
+    @Size(min = 3, max = 50, message = "3 à 50 caractères")
+    @Column(nullable = false, unique = true, length = 50)
     private String name;
+
     private String description;
     private Date startDate;
 

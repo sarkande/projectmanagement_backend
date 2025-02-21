@@ -1,6 +1,9 @@
 package com.codesolution.projectmanagement.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +14,23 @@ public class User {
 
     // Attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
+    @NotBlank(message = "Le nom d'utilisateur est obligatoire")
+    @Size(min = 3, max = 50, message = "3 à 50 caractères")
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
+
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "Format d'email invalide")
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
+
+    @NotBlank(message = "Le mot de passe est obligatoire")
+    @Size(min = 8, message = "Minimum 8 caractères")
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

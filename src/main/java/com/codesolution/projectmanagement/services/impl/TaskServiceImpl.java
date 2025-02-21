@@ -1,10 +1,9 @@
 package com.codesolution.projectmanagement.services.impl;
 
-import com.codesolution.projectmanagement.dao.ProjectRepository;
 import com.codesolution.projectmanagement.dao.TaskRepository;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
-import com.codesolution.projectmanagement.exceptions.ProjectNotFoundException;
 import com.codesolution.projectmanagement.models.Task;
+import com.codesolution.projectmanagement.services.ProjectService;
 import com.codesolution.projectmanagement.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,39 +19,40 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private ProjectService projectService;
 
 
     @Override
     public List<Task> findAllByProjectId(Integer projectId) {
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
         List<Task> tasks = new ArrayList<>();
-        taskRepository.findAll().forEach(tasks::add);
+        taskRepository.findByProjectId(projectId).forEach(tasks::add);
         return tasks;
     }
 
     @Override
     public Task findById(Integer projectId, Integer taskId) {
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
 
-        Optional<Task> task = taskRepository.findById(taskId);
+        Optional<Task> task = taskRepository.findByIdAndProjectId( projectId,taskId);
         if (!task.isPresent())
             throw new EntityDontExistException();
+
         return task.get();
     }
 
     @Override
     public int create(Integer projectId, Task task) {
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
         return taskRepository.save(task).getId();
     }
 
     @Override
     public void update(Integer projectId, Integer taskId, Task task) {
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
         task.setId(taskId);
         taskRepository.save(task);
@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void updatePartial(Integer projectId, Integer taskId, Task oldTask, Task newTask){
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
 
         if (newTask.getName() != null) {
@@ -83,7 +83,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void delete(Integer projectId, Integer taskId) {
-        projectRepository.findById(projectId).get();
+        projectService.findById(projectId);
 
         taskRepository.deleteById(taskId);
     }
