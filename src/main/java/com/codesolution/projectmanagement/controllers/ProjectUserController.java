@@ -34,8 +34,8 @@ public class ProjectUserController {
     private ProjectUserService projectUserService;
 
     @ModelAttribute("project")
-    public Project validateProject(@ModelAttribute("project") Project project) {
-        return projectRepository.findById(project.getId())
+    public Project validateProject(@PathVariable Integer projectId) {
+        return projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityDontExistException("Projet non trouvé"));
     }
 

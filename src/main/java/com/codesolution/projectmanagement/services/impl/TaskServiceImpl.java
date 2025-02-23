@@ -45,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public int create(Integer projectId, Task task) {
+        // SI le projet existe, et que j'y suis associé, et que j'ai les droits
         projectService.findById(projectId);
 
         return taskRepository.save(task).getId();
