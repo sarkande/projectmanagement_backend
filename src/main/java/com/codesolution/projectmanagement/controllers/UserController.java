@@ -22,6 +22,12 @@ public class UserController {
         return userService.findAll();
     }
 
+    @PostMapping("/user/login")
+    @ResponseStatus(code = HttpStatus.OK)
+    public User login(@Valid @RequestBody User user) {
+        return userService.login(user.getEmail(), user.getPassword());
+    }
+
     @GetMapping("/user/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public User getUserById(@PathVariable Integer id) {

@@ -1,6 +1,7 @@
 package com.codesolution.projectmanagement.services.impl;
 
 import com.codesolution.projectmanagement.dao.UserRepository;
+import com.codesolution.projectmanagement.exceptions.EntityAlreadyExistException;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.UserService;
@@ -16,6 +17,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Override
+    public User login(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password);
+    }
 
     @Override
     public List<User> findAll() {
@@ -36,6 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int created(User user) {
+        if(userRepository.existsByEmail(user.getEmail()))
+            throw new EntityAlreadyExistException();
+
         return userRepository.save(user).getId();
     }
 
