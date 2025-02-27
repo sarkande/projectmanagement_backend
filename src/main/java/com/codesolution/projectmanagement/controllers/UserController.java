@@ -1,5 +1,6 @@
 package com.codesolution.projectmanagement.controllers;
 
+import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.UserService;
 import jakarta.validation.Valid;
@@ -25,7 +26,11 @@ public class UserController {
     @PostMapping("/user/login")
     @ResponseStatus(code = HttpStatus.OK)
     public User login(@Valid @RequestBody User user) {
-        return userService.login(user.getEmail(), user.getPassword());
+        User user_logged = userService.login(user.getEmail(), user.getPassword());
+        if (user_logged == null) {
+            throw new EntityDontExistException("User not found");
+        }
+        return user_logged;
     }
 
     @GetMapping("/user/{id}")

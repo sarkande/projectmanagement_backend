@@ -22,7 +22,6 @@ public class Project {
     private String description;
     private Date startDate;
 
-
     //getters and setters
 
     public Integer getId() {
@@ -56,4 +55,6 @@ public class Project {
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
+
+
 }
