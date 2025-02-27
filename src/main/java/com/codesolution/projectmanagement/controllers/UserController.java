@@ -1,5 +1,7 @@
 package com.codesolution.projectmanagement.controllers;
 
+import com.codesolution.projectmanagement.dtos.UserDTO;
+import com.codesolution.projectmanagement.dtos.UserLoginDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.UserService;
@@ -19,14 +21,14 @@ public class UserController {
 
     @GetMapping("/users")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.findAll();
     }
 
     @PostMapping("/user/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public User login(@Valid @RequestBody User user) {
-        User user_logged = userService.login(user.getEmail(), user.getPassword());
+    public UserDTO login(@Valid @RequestBody UserLoginDTO user) {
+        UserDTO user_logged = userService.login(user.email(), user.password());
         if (user_logged == null) {
             throw new EntityDontExistException("User not found");
         }
@@ -35,7 +37,7 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     @ResponseStatus(code = HttpStatus.OK)
-    public User getUserById(@PathVariable Integer id) {
+    public UserDTO getUserById(@PathVariable Integer id) {
         return userService.findById(id);
     }
 
@@ -68,7 +70,7 @@ public class UserController {
     ) {
         //On appelle la méthode findById pour vérifier si l'utilisateur existe,
         // s'il n'existe pas on declenchera automatiquement l'exception EntityDontExistException
-        User oldUser = userService.findById(id);
+        User oldUser = userService.findUserById(id);
 
         userService.updatePartial(id, oldUser, newUser);
         return ResponseEntity.noContent().build();

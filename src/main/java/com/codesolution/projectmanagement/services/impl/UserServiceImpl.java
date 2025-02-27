@@ -1,6 +1,7 @@
 package com.codesolution.projectmanagement.services.impl;
 
 import com.codesolution.projectmanagement.dao.UserRepository;
+import com.codesolution.projectmanagement.dtos.UserDTO;
 import com.codesolution.projectmanagement.exceptions.EntityAlreadyExistException;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.User;
@@ -19,25 +20,38 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+    public UserDTO login(String email, String password) {
+        User user = userRepository.findByEmailAndPassword(email, password);
+
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail());
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserDTO> findAll() {
         List<User> users = new ArrayList<User>();
         userRepository.findAll().forEach(users::add);
-        return users;
+
+        List<UserDTO> usersDTO = new ArrayList<UserDTO>();
+        for(User user : users){
+            usersDTO.add(new UserDTO(user.getId(), user.getUsername(), user.getEmail()));
+        }
+        return usersDTO;
     }
 
     @Override
-    public User findById(Integer id) {
+    public UserDTO findById(Integer id) {
         Optional<User> user = userRepository.findById(id);
 
         if(!user.isPresent())
             throw new EntityDontExistException();
 
-        return user.get();
+        User userObj = user.get();
+        return new UserDTO(userObj.getId(), userObj.getUsername(), userObj.getEmail());
+    }
+
+    public User findUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(EntityDontExistException::new);
     }
 
     @Override
@@ -56,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePartial(Integer id, User oldUser, User newUser) {
+        this.findById(id);
         //username, email, password
         if(newUser.getUsername() != null){
             oldUser.setUsername(newUser.getUsername());

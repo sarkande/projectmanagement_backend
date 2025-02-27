@@ -42,7 +42,7 @@ public class ProjectUserServiceImpl implements ProjectUserService  {
     @Override
     public List<UserWithRoleDTO> findUsersWithRolesByProjectId(Integer projectId) {
         return projectUserRepository.findByProject_Id(projectId).stream()
-                .map(pu -> new UserWithRoleDTO(pu.getUser(), pu.getRole()))
+                .map(pu -> new UserWithRoleDTO(pu.getUser().getId(),pu.getUser().getEmail(), pu.getUser().getUsername(), pu.getRole()))
                 .collect(Collectors.toList());
     }
 
