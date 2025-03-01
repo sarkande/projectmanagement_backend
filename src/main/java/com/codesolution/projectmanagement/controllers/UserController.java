@@ -3,6 +3,7 @@ package com.codesolution.projectmanagement.controllers;
 import com.codesolution.projectmanagement.dtos.UserDTO;
 import com.codesolution.projectmanagement.dtos.UserLoginDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
+import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.UserService;
 import jakarta.validation.Valid;
@@ -84,5 +85,11 @@ public class UserController {
         // s'il n'existe pas on declenchera automatiquement l'exception EntityDontExistException
         userService.findById(id);
         userService.delete(id);
+    }
+
+    @GetMapping("/user/{id}/projects")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Project> getUserProjects(@PathVariable Integer id) {
+        return userService.findUserProjects(id);
     }
 }

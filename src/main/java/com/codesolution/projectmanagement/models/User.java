@@ -41,6 +41,8 @@ public class User {
     )
     private List<Task> tasks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<ProjectUser> projectUsers = new ArrayList<>();
 
     // Getters and Setters
     public Integer getId() {
@@ -75,7 +77,19 @@ public class User {
         this.password = password;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 
+    public List<ProjectUser> getProjectUsers() {
+        return projectUsers;
+    }
 
+    public void setProjectUsers(List<ProjectUser> projectUsers) {
+        this.projectUsers = projectUsers;
+    }
 }

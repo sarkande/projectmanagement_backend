@@ -2,8 +2,11 @@ package com.codesolution.projectmanagement.services.impl;
 
 import com.codesolution.projectmanagement.dao.UserRepository;
 import com.codesolution.projectmanagement.dtos.UserDTO;
+import com.codesolution.projectmanagement.exceptions.BadLoginException;
 import com.codesolution.projectmanagement.exceptions.EntityAlreadyExistException;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
+import com.codesolution.projectmanagement.models.Project;
+import com.codesolution.projectmanagement.models.ProjectUser;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,8 +26,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO login(String email, String password) {
         User user = userRepository.findByEmailAndPassword(email, password);
-
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail());
+        if (user == null)
+            throw new BadLoginException();
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername());
     }
 
     @Override
@@ -33,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
         List<UserDTO> usersDTO = new ArrayList<UserDTO>();
         for(User user : users){
-            usersDTO.add(new UserDTO(user.getId(), user.getUsername(), user.getEmail()));
+            usersDTO.add(new UserDTO(user.getId(), user.getEmail(), user.getUsername()));
         }
         return usersDTO;
     }
@@ -46,7 +51,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityDontExistException();
 
         User userObj = user.get();
-        return new UserDTO(userObj.getId(), userObj.getUsername(), userObj.getEmail());
+        return new UserDTO(userObj.getId(), userObj.getEmail(), userObj.getUsername());
     }
 
     public User findUserById(Integer id) {
@@ -88,5 +93,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Integer id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Project> findUserProjects(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityDontExistException("User not found with id: " + id));
+
+        return  user.getProjectUsers().stream()
+                .map(ProjectUser::getProject)
+                .collect(Collectors.toList());
+
     }
 }

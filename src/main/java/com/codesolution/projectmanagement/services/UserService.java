@@ -1,6 +1,7 @@
 package com.codesolution.projectmanagement.services;
 
 import com.codesolution.projectmanagement.dtos.UserDTO;
+import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.User;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface UserService {
     public void delete(Integer id);
 
     public UserDTO login(String email, String password);
+    public List<Project> findUserProjects(Integer id);
 }
