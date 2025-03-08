@@ -1,10 +1,13 @@
 package com.codesolution.projectmanagement.controllers;
 
+import com.codesolution.projectmanagement.dtos.ProjectWithRoleDTO;
 import com.codesolution.projectmanagement.dtos.UserDTO;
 import com.codesolution.projectmanagement.dtos.UserLoginDTO;
+import com.codesolution.projectmanagement.dtos.UserProjectsResponseDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
-import com.codesolution.projectmanagement.models.Project;
+import com.codesolution.projectmanagement.models.ProjectUser;
 import com.codesolution.projectmanagement.models.User;
+import com.codesolution.projectmanagement.services.ProjectUserService;
 import com.codesolution.projectmanagement.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +15,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProjectUserService projectUserService;
 
     @GetMapping("/users")
     @ResponseStatus(code = HttpStatus.OK)
@@ -87,9 +93,20 @@ public class UserController {
         userService.delete(id);
     }
 
+//    @GetMapping("/user/{id}/projects")
+//    @ResponseStatus(code = HttpStatus.OK)
+//    public List<Project> getUserProjects(@PathVariable Integer id) {
+//        return userService.findUserProjects(id);
+//    }
+
     @GetMapping("/user/{id}/projects")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Project> getUserProjects(@PathVariable Integer id) {
-        return userService.findUserProjects(id);
+    public List<ProjectWithRoleDTO> getUserProjects(@PathVariable Integer id) {
+        UserDTO user = userService.findById(id);
+        List<ProjectUser> projectUsers = projectUserService.findProjectUsersByUserId(id);
+        return projectUsers.stream()
+                .map(pu -> new ProjectWithRoleDTO(pu.getProject(), pu.getRole()))
+                .collect(Collectors.toList());
     }
+
 }

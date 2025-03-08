@@ -5,6 +5,7 @@ import com.codesolution.projectmanagement.models.ProjectUser;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectUserRepository extends CrudRepository<ProjectUser, Integer> {
 
@@ -13,5 +14,9 @@ public interface ProjectUserRepository extends CrudRepository<ProjectUser, Integ
 
     // Trouver par ID de l'utilisateur (colonne "user" en base)
     List<ProjectUser> findByUser_Id(Integer userId);
+
+    Optional<ProjectUser> findByProject_IdAndUser_Id(Integer projectId, Integer userId);
+
+    List<ProjectUser> findByUserId(Integer userId);
 
 }

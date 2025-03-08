@@ -11,11 +11,14 @@ import com.codesolution.projectmanagement.services.ProjectUserService;
 import com.codesolution.projectmanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/project/{projectId}") // Préfixe pour toutes les routes de ce contrôleur
@@ -45,4 +48,12 @@ public class ProjectUserController {
         return projectUserService.findUsersWithRolesByProjectId(project.getId());
     }
 
+    @GetMapping("/user/{userId}/role")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Map<String, String>> getUserWithRoleByProject(@ModelAttribute("project") Project project, @PathVariable Integer userId) {
+        String role = projectUserService.findUserWithRoleByProjectId(project.getId(), userId);
+        Map<String, String> response = new HashMap<>();
+        response.put("role", role);
+        return ResponseEntity.ok(response);
+    }
 }

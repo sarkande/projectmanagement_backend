@@ -1,9 +1,13 @@
 package com.codesolution.projectmanagement.models;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "project_user")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class ProjectUser {
 
     @Id
@@ -18,6 +22,7 @@ public class ProjectUser {
     @JoinColumn(name = "project", referencedColumnName = "id")
     private Project project;
 
+    //Administrateur, Membre, Observateur
     private String role;
 
     // Getters and Setters
@@ -50,6 +55,11 @@ public class ProjectUser {
     }
 
     public void setRole(String role) {
+        if (!role.equals("Administrateur") && !role.equals("Membre") && !role.equals("Observateur"))  {
+            throw new IllegalArgumentException("Le rôle doit être Administrateur, Membre ou Observateur");
+        }
         this.role = role;
     }
+
+
 }

@@ -88,6 +88,18 @@ public class ProjectUserServiceImpl implements ProjectUserService  {
         projectUserRepository.deleteById(id);
     }
 
+    @Override
+    public String findUserWithRoleByProjectId(Integer projectId, Integer userId) {
+        return projectUserRepository.findByProject_IdAndUser_Id(projectId, userId)
+                .map(ProjectUser::getRole)
+                .orElseThrow(() -> new EntityDontExistException("Relation projet-utilisateur non trouvée"));
+    }
+
+    @Override
+    public List<ProjectUser> findProjectUsersByUserId(Integer userId) {
+        return projectUserRepository.findByUserId(userId);
+    }
+
     // Méthode utilitaire pour valider l'existence du projet et de l'utilisateur
     private void validateProjectAndUserExist(Integer projectId, Integer userId) {
         if (!projectRepository.existsById(projectId)) {

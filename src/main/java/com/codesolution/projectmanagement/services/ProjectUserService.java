@@ -13,4 +13,7 @@ public interface ProjectUserService {
     void delete(Integer id);
 
     List<UserWithRoleDTO> findUsersWithRolesByProjectId(Integer id);
+    String findUserWithRoleByProjectId(Integer projectId, Integer userId);
+    List<ProjectUser> findProjectUsersByUserId(Integer userId);
+
 }
