@@ -54,6 +54,12 @@ public class UserServiceImpl implements UserService {
         return new UserDTO(userObj.getId(), userObj.getEmail(), userObj.getUsername());
     }
 
+    @Override
+    public User findByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.orElseThrow(EntityDontExistException::new);
+    }
+
     public User findUserById(Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(EntityDontExistException::new);

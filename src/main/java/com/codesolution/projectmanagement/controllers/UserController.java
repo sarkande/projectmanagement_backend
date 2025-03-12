@@ -93,12 +93,6 @@ public class UserController {
         userService.delete(id);
     }
 
-//    @GetMapping("/user/{id}/projects")
-//    @ResponseStatus(code = HttpStatus.OK)
-//    public List<Project> getUserProjects(@PathVariable Integer id) {
-//        return userService.findUserProjects(id);
-//    }
-
     @GetMapping("/user/{id}/projects")
     @ResponseStatus(code = HttpStatus.OK)
     public List<ProjectWithRoleDTO> getUserProjects(@PathVariable Integer id) {

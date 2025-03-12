@@ -10,6 +10,7 @@ public interface UserService {
 
     public List<UserDTO> findAll();
     public UserDTO findById(Integer id);
+    public User findByEmail(String email);
     public User findUserById(Integer id);
     public int created(User user);
     public void update(Integer id, User user);
@@ -18,4 +19,5 @@ public interface UserService {
 
     public UserDTO login(String email, String password);
     public List<Project> findUserProjects(Integer id);
+
 }

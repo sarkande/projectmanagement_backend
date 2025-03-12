@@ -89,4 +89,44 @@ public class ProjectController {
         projectService.findById(id);
         projectService.delete(id);
     }
+
+    @PostMapping("/project/{projectId}/adduser")
+    public Integer addUserToProject(@PathVariable Integer projectId, @RequestParam String userMail, @RequestParam String role, @RequestParam Integer currentUser) {
+        // On verifie sur l'utilisateur actuel existe
+        User user = userService.findUserById(currentUser);
+        if(user == null) {
+            throw new BadRequestException("User not found");
+        }
+
+        //On verifie si le projet existe
+        Project project = projectService.findById(projectId);
+        if(project == null) {
+            throw new BadRequestException("Project not found");
+        }
+
+        //On verifie si il a les droits d'ajouté quelqu'un sur ce projet
+        if(!projectUserService.findUserWithRoleByProjectId(projectId, currentUser).equals("Administrateur")) {
+            throw new BadRequestException("You don't have the rights to add someone to this project");
+        }
+
+
+        //On verifie si le mail est bien rattaché à un utilisateur qui existe et qui n'est pas déja associé à ce projet
+        User newUser = userService.findByEmail(userMail);
+
+        if(newUser == null) {
+            throw new BadRequestException("User not found");
+        }
+
+        if(projectUserService.findUserWithRoleByProjectId(projectId, newUser.getId()) != null) {
+            throw new BadRequestException("User already in this project");
+        }
+
+        //On crée une nouvelle association entre le projet et l'utilisateur et le role
+        ProjectUser projectUser = new ProjectUser();
+        projectUser.setProject(project);
+        projectUser.setUser(newUser);
+        projectUser.setRole(role);
+
+        return projectUserService.created(projectUser);
+    }
 }
