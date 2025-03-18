@@ -100,6 +100,11 @@ public class ProjectUserServiceImpl implements ProjectUserService  {
         return projectUserRepository.findByUserId(userId);
     }
 
+    @Override
+    public Boolean isUserInProject(Integer projectId, Integer userId) {
+        return projectUserRepository.existsByProject_IdAndUser_Id(projectId, userId);
+    }
+
     // Méthode utilitaire pour valider l'existence du projet et de l'utilisateur
     private void validateProjectAndUserExist(Integer projectId, Integer userId) {
         if (!projectRepository.existsById(projectId)) {

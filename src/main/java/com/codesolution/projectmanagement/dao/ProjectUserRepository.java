@@ -19,4 +19,5 @@ public interface ProjectUserRepository extends CrudRepository<ProjectUser, Integ
 
     List<ProjectUser> findByUserId(Integer userId);
 
+    boolean existsByProject_IdAndUser_Id(Integer projectId, Integer userId);
 }

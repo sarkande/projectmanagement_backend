@@ -117,7 +117,7 @@ public class ProjectController {
             throw new BadRequestException("User not found");
         }
 
-        if(projectUserService.findUserWithRoleByProjectId(projectId, newUser.getId()) != null) {
+        if(projectUserService.isUserInProject(projectId, newUser.getId()) ) {
             throw new BadRequestException("User already in this project");
         }
 

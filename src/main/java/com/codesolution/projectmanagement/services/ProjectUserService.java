@@ -16,4 +16,5 @@ public interface ProjectUserService {
     String findUserWithRoleByProjectId(Integer projectId, Integer userId);
     List<ProjectUser> findProjectUsersByUserId(Integer userId);
 
+    Boolean isUserInProject(Integer projectId, Integer userId);
 }
