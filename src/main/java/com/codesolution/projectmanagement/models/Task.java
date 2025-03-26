@@ -1,13 +1,15 @@
 package com.codesolution.projectmanagement.models;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
+import java.util.*;
+
 @Entity
 @Table(name = "task")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id",
+        scope = Task.class)
 public class Task {
 
     //attributes
@@ -22,11 +24,16 @@ public class Task {
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "project_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties("tasks")
     private Project project;
     //getters and setters
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
-    private List<User> users = new ArrayList<>();
+    @JsonIgnoreProperties("tasks")
+    private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     public Integer getId() {
         return id;
@@ -84,11 +91,19 @@ public class Task {
         this.project = project;
     }
 
-    public List<User> getUsers() {
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 }

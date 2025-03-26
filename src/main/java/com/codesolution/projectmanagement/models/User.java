@@ -1,5 +1,6 @@
 package com.codesolution.projectmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +13,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Table(name = "user")
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
 
 public class User {
 
@@ -43,6 +44,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id")
     )
+    @JsonIgnoreProperties("users")
     private List<Task> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")

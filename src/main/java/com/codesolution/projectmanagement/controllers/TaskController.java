@@ -1,6 +1,7 @@
 package com.codesolution.projectmanagement.controllers;
 
 import com.codesolution.projectmanagement.dao.ProjectRepository;
+import com.codesolution.projectmanagement.dtos.TaskDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.Task;
@@ -59,10 +60,13 @@ public class TaskController {
     // Mise à jour partielle d'une tâche d'un projet
     @PatchMapping("/task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePartialTask(@ModelAttribute("project") Project project,@PathVariable Integer taskId, @RequestBody Task newTask) {
-        Task oldTask = taskService.findById(project.getId(), taskId);
-        taskService.updatePartial(project.getId(), taskId, oldTask, newTask);
+    public void updatePartialTask(
+            @ModelAttribute("project") Project project,
+            @PathVariable Integer taskId,
+            @RequestBody TaskDTO taskDTO) {
+        taskService.updatePartial(project.getId(), taskId,  taskDTO);
     }
+
 
     // Supprimer une tâche d'un projet
     @DeleteMapping("/task/{taskId}")
@@ -70,4 +74,12 @@ public class TaskController {
     public void deleteTask(@ModelAttribute("project") Project project,@PathVariable Integer taskId) {
         taskService.delete(project.getId(), taskId);
     }
+
+    //ajouter un utilisateur à une tâche (l'utilisateur doit être déjà associé au projet) en utilisant son email
+    @PostMapping("/task/{taskId}/user")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addUserToTask(@ModelAttribute("project") Project project, @PathVariable Integer taskId, @RequestParam String email) {
+        taskService.addUserToTask(project.getId(), taskId, email);
+    }
+
 }

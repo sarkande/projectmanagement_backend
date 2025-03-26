@@ -1,14 +1,24 @@
 package com.codesolution.projectmanagement.services.impl;
 
 import com.codesolution.projectmanagement.dao.TaskRepository;
+import com.codesolution.projectmanagement.dao.UserRepository;
+import com.codesolution.projectmanagement.dtos.TaskDTO;
+import com.codesolution.projectmanagement.exceptions.BadRequestException;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
+import com.codesolution.projectmanagement.models.Comment;
+import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.Task;
+import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.ProjectService;
+import com.codesolution.projectmanagement.services.ProjectUserService;
 import com.codesolution.projectmanagement.services.TaskService;
+import com.codesolution.projectmanagement.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +30,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProjectUserService projectUserService;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Override
@@ -45,11 +64,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public int create(Integer projectId, Task task) {
-        // SI le projet existe, et que j'y suis associé, et que j'ai les droits
-        projectService.findById(projectId);
+        Project project = projectService.findById(projectId);  // Récupère le projet pour s'assurer qu'il existe
 
-        return taskRepository.save(task).getId();
+        // Assurez-vous que le projet existe bien avant de continuer
+        if (project == null) {
+            throw new EntityNotFoundException("Projet avec l'ID " + projectId + " non trouvé");
+        }
+
+        task.setProject(project);  // Associe le projet à la tâche
+        return taskRepository.save(task).getId();  // Sauvegarde la tâche avec le projectId correctement défini
     }
+
 
     @Override
     public void update(Integer projectId, Integer taskId, Task task) {
@@ -60,26 +85,37 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updatePartial(Integer projectId, Integer taskId, Task oldTask, Task newTask){
+    public void updatePartial(Integer projectId, Integer taskId, TaskDTO updateDTO) {
         projectService.findById(projectId);
+        Comment comment = new Comment();
 
 
-        if (newTask.getName() != null) {
-            oldTask.setName(newTask.getName());
+        Task task = findById(projectId, taskId);
+
+        if (updateDTO.name() != null) {
+            task.setName(updateDTO.name());
         }
-        if (newTask.getDescription() != null) {
-            oldTask.setDescription(newTask.getDescription());
+        if (updateDTO.description() != null) {
+            task.setDescription(updateDTO.description());
         }
-        if (newTask.getPriority() != null) {
-            oldTask.setPriority(newTask.getPriority());
+        if (updateDTO.priority() != null) {
+            task.setPriority(updateDTO.priority());
         }
-        if (newTask.getDueDate() != null) {
-            oldTask.setDueDate(newTask.getDueDate());
+        if (updateDTO.dueDate() != null) {
+            task.setDueDate(updateDTO.dueDate());
         }
-        if (newTask.getStatus() != null) {
-            oldTask.setStatus(newTask.getStatus());
+        if (updateDTO.status() != null) {
+            task.setStatus(updateDTO.status());
         }
-        taskRepository.save(oldTask);
+
+        comment.setTask(task);
+        comment.setContent("Task has been updated");
+        comment.setCreatedAt(new Date());
+        comment.setCreatedBy("System");
+
+        task.getComments().add(comment);
+
+        taskRepository.save(task);
     }
 
     @Override
@@ -87,5 +123,58 @@ public class TaskServiceImpl implements TaskService {
         projectService.findById(projectId);
 
         taskRepository.deleteById(taskId);
+    }
+
+    @Override
+    public int addUserToTask(Integer projectId, Integer taskId, String email) {
+        // Verify if the project exists
+        Project project = projectService.findById(projectId);
+        if (project == null) {
+            throw new EntityNotFoundException("Project not found");
+        }
+
+        // Verify if the task exists
+        Task task = findById(projectId, taskId);
+        if (task == null) {
+            throw new EntityNotFoundException("Task not found");
+        }
+
+        // Verify if the user exists
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+
+        // Verify if the user is already associated with the project
+        if (!projectUserService.isUserInProject(projectId, user.getId())) {
+            throw new BadRequestException("User is not associated with the project");
+        }
+
+        // Verify if the user is already associated with the task
+        if (task.getUsers().contains(user)) {
+            throw new BadRequestException("User is already associated with the task");
+        }
+
+        // Add the user to the task
+        task.getUsers().add(user);
+        taskRepository.save(task);
+
+        // We need to also add the task to the user
+        user.getTasks().add(task);
+        userRepository.save(user);
+
+        //We need to email the user to notify him that he has been added to the task
+
+        // We add a comment to the task to notify that the user has been added to the task
+        Comment comment = new Comment();
+
+        comment.setTask(task);
+        comment.setContent("User " + user.getEmail() + " has been added to the task");
+        comment.setCreatedAt(new Date());
+        comment.setCreatedBy(user.getEmail());
+
+        task.getComments().add(comment);
+        task.getComments().add(comment);
+        return task.getId();
     }
 }
