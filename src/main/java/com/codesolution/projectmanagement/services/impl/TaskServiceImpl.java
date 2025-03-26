@@ -9,10 +9,7 @@ import com.codesolution.projectmanagement.models.Comment;
 import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.Task;
 import com.codesolution.projectmanagement.models.User;
-import com.codesolution.projectmanagement.services.ProjectService;
-import com.codesolution.projectmanagement.services.ProjectUserService;
-import com.codesolution.projectmanagement.services.TaskService;
-import com.codesolution.projectmanagement.services.UserService;
+import com.codesolution.projectmanagement.services.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +36,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MailService mailService;
 
 
     @Override
@@ -158,12 +158,13 @@ public class TaskServiceImpl implements TaskService {
         // Add the user to the task
         task.getUsers().add(user);
         taskRepository.save(task);
-
         // We need to also add the task to the user
         user.getTasks().add(task);
         userRepository.save(user);
 
         //We need to email the user to notify him that he has been added to the task
+
+        this.mailService.sendNotification(email, "You have been added to the task " + task.getName());
 
         // We add a comment to the task to notify that the user has been added to the task
         Comment comment = new Comment();
@@ -175,6 +176,8 @@ public class TaskServiceImpl implements TaskService {
 
         task.getComments().add(comment);
         task.getComments().add(comment);
+        taskRepository.save(task);
+
         return task.getId();
     }
 }

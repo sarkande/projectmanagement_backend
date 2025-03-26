@@ -14,4 +14,5 @@ public interface TaskService {
     void delete(Integer projectId, Integer taskId);
 
     int addUserToTask(Integer projectId, Integer taskId, String email);
+
 }
