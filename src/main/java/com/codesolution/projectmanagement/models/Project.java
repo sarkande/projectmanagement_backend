@@ -5,7 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 @Table(name = "project")
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -24,6 +28,8 @@ public class Project {
     private String description;
     private Date startDate;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
     //getters and setters
 
     public Integer getId() {
@@ -58,5 +64,11 @@ public class Project {
         this.startDate = startDate;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 }

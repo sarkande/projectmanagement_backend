@@ -5,6 +5,7 @@ import com.codesolution.projectmanagement.exceptions.BadRequestException;
 import com.codesolution.projectmanagement.models.Project;
 import com.codesolution.projectmanagement.models.ProjectUser;
 import com.codesolution.projectmanagement.models.User;
+import com.codesolution.projectmanagement.services.MailService;
 import com.codesolution.projectmanagement.services.ProjectService;
 import com.codesolution.projectmanagement.services.ProjectUserService;
 import com.codesolution.projectmanagement.services.UserService;
@@ -24,6 +25,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectUserService projectUserService;
+
+    @Autowired
+    private MailService mailService;
 
     @GetMapping("/projects")
     @ResponseStatus(code = HttpStatus.OK)
@@ -126,6 +130,8 @@ public class ProjectController {
         projectUser.setProject(project);
         projectUser.setUser(newUser);
         projectUser.setRole(role);
+
+        this.mailService.sendNotification(user.getEmail(), "Vous avez été assigné au projet " + project.getName());
 
         return projectUserService.created(projectUser);
     }

@@ -6,6 +6,7 @@ import com.codesolution.projectmanagement.dtos.UserLoginDTO;
 import com.codesolution.projectmanagement.dtos.UserProjectsResponseDTO;
 import com.codesolution.projectmanagement.exceptions.EntityDontExistException;
 import com.codesolution.projectmanagement.models.ProjectUser;
+import com.codesolution.projectmanagement.models.Task;
 import com.codesolution.projectmanagement.models.User;
 import com.codesolution.projectmanagement.services.ProjectUserService;
 import com.codesolution.projectmanagement.services.UserService;
@@ -93,11 +94,25 @@ public class UserController {
         userService.delete(id);
     }
 
+
+    @GetMapping("/user/{id}/tasks")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Task> getUserTasks(@PathVariable Integer id) {
+        UserDTO user = userService.findById(id);
+        List<ProjectUser> projectUsers = projectUserService.findProjectUsersByUserId(id);
+
+        return projectUsers.stream()
+                .map(pu -> pu.getProject().getTasks())
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/user/{id}/projects")
     @ResponseStatus(code = HttpStatus.OK)
     public List<ProjectWithRoleDTO> getUserProjects(@PathVariable Integer id) {
         UserDTO user = userService.findById(id);
         List<ProjectUser> projectUsers = projectUserService.findProjectUsersByUserId(id);
+
         return projectUsers.stream()
                 .map(pu -> new ProjectWithRoleDTO(pu.getProject(), pu.getRole()))
                 .collect(Collectors.toList());

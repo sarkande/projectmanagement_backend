@@ -164,7 +164,7 @@ public class TaskServiceImpl implements TaskService {
 
         //We need to email the user to notify him that he has been added to the task
 
-        this.mailService.sendNotification(email, "You have been added to the task " + task.getName());
+        this.mailService.sendNotification(email, "Vous avez été assigné à la tâche" + task.getName()+ " du projet " + project.getName());
 
         // We add a comment to the task to notify that the user has been added to the task
         Comment comment = new Comment();
