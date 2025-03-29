@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/project/{projectId}") // Préfixe pour toutes les routes de ce contrôleur
@@ -32,8 +33,9 @@ public class TaskController {
     // Lister toutes les tâches d'un projet
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getAllTasksByProjectId(@ModelAttribute("project") Project project) {
-        return taskService.findAllByProjectId(project.getId());
+    public List<TaskDTO> getAllTasksByProjectId(@ModelAttribute("project") Project project) {
+        List<Task> tasks = taskService.findAllByProjectId(project.getId());
+        return tasks.stream().map(TaskDTO::new).collect(Collectors.toList());
     }
 
     // Ajouter une tâche à un projet
